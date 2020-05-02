@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layout/components/header/header.component';
@@ -22,7 +23,8 @@ import { RecipeComponent } from './recipe/recipe.component';
     ShoppingEditComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
