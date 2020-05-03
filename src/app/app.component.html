@@ -1,9 +1,8 @@
-<app-header (menuItemSelected)="onNavigate($event)"></app-header>
+<app-header></app-header>
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <app-recipe *ngIf="currentMenuItem === menuItems.Recipe"></app-recipe>
-            <app-shopping-list *ngIf="currentMenuItem === menuItems.ShoppingList"></app-shopping-list>
+            <router-outlet></router-outlet>
         </div>
     </div>
 </div>
