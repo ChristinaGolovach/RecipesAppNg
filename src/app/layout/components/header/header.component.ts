@@ -1,5 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { MenuItem } from 'src/app/shared/enums/menuItems.enum';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-header',
