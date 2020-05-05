@@ -9,22 +9,22 @@ import { ShoppingListService } from '../procurement/shopping-list/shopping-list.
 })
 export class RecipeService {
     private recipes: Recipe[] = [
-        new Recipe(
-            'Test recipe1',
-            'Test description',
-            'https://c.pxhere.com/photos/c7/2d/bowl_cuisine_delicious_dinner_dish_epicure_food_frying_pan-1523981.jpg!d',
-            [
+        new Recipe({
+            name: 'Test recipe1',
+            description: 'Test description',
+            imagePath: 'https://c.pxhere.com/photos/c7/2d/bowl_cuisine_delicious_dinner_dish_epicure_food_frying_pan-1523981.jpg!d',
+            ingredients:[
                 new Ingredient('potato', 5),
                 new Ingredient('leek', 1)
-            ]),
-        new Recipe(
-            'Test recipe2',
-            'Test description', 
-            'https://c.pxhere.com/photos/70/46/cookies_baked_goods_frisch_chocolate_sweet_calories_milk_icing_sugar-1038105.jpg!d',
-            [
+            ]}),
+        new Recipe({
+            name: 'Test recipe2',
+            description: 'Test description', 
+            imagePath: 'https://c.pxhere.com/photos/70/46/cookies_baked_goods_frisch_chocolate_sweet_calories_milk_icing_sugar-1038105.jpg!d',
+            ingredients: [
                 new Ingredient('egg', 2),
                 new Ingredient('flour', 1)
-            ])
+            ]})
     ];
 
     constructor(
