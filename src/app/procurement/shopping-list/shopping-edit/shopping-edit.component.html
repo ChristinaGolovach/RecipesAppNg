@@ -1,21 +1,32 @@
 <div class="row">
     <div class="col-xs-12">
-        <form>
+        <form #tdForm="ngForm" (ngSubmit)="onSubmit(tdForm)">
             <div class="row">
                 <div class="col-sm-5 form-group">
                     <label for="name">Name</label>
-                    <input #nameInput type="text" id="name" class="form-control">
+                    <input ngModel
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="form-control"
+                        required>
                 </div>
                 <div class="col-sm-2 form-group">
                     <label for="amount">Amount</label>
-                    <input #amountInput type="number" id="amount" class="form-control">
+                    <input ngModel
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        class="form-control"
+                        required
+                        pattern="^[1-9]+[0-9]*$">
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <button class="btn btn-success" type="submit" (click)="onAddIngredient()">Add</button>
-                    <button class="btn btn-danger" type="button">Delete</button>
-                    <button class="btn btn-primary" type="button">Clear</button>
+                    <button class="btn btn-success" type="submit" [disabled]="!tdForm.valid">{{ isEditMode ? 'Update' : 'Add' }}</button>
+                    <button *ngIf="isEditMode" class="btn btn-danger" type="button" (click)="onDelete()">Delete</button>
+                    <button class="btn btn-primary" type="button" (click)="onClear()">Clear</button>
                 </div>
             </div>
         </form>

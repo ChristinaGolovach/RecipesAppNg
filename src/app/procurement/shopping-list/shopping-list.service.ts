@@ -10,9 +10,11 @@ export class ShoppingListService {
     new Ingredient('Apples', 5),
     new Ingredient('Tomatoes', 7)
   ];
-  private ingredientAdded: Subject<Ingredient[]> = new Subject<Ingredient[]>();
+  private ingredientsChanged: Subject<Ingredient[]> = new Subject<Ingredient[]>();
+  private ingredientPassedToEdit: Subject<[Ingredient, number]> = new Subject<[Ingredient, number]>();
 
-  ingredientAdded$: Observable<Ingredient[]> = this.ingredientAdded.asObservable();
+  ingredientsChanged$: Observable<Ingredient[]> = this.ingredientsChanged.asObservable();
+  ingredientPassedToEdit$: Observable<[Ingredient, number]> = this.ingredientPassedToEdit.asObservable();
 
   constructor() { }
 
@@ -22,6 +24,21 @@ export class ShoppingListService {
 
   addIngredients(...ingredient: Ingredient[]): void {
     this.ingredients = [...this.ingredients, ...ingredient];
-    this.ingredientAdded.next([... this.ingredients]);
+    this.ingredientsChanged.next([... this.ingredients]);
+  }
+
+  editIngredient(index: number, ingredient: Ingredient): void {
+    this.ingredients[index] = ingredient;
+    this.ingredientsChanged.next([... this.ingredients]);
+  }
+
+  deleteIngredient(index: number): void {
+    this.ingredients.splice(index, 1);
+    this.ingredientsChanged.next([... this.ingredients]);
+  }
+
+  passIngredientToEdit(index: number): void {
+    const ingredients = [... this.ingredients];
+    this.ingredientPassedToEdit.next([ingredients[index], index]);
   }
 }
