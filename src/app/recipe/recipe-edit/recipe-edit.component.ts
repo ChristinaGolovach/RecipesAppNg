@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { Recipe } from '../models/recipe.model';
 import { RecipeService } from '../recipe.service';
-import { KeyValue } from 'src/app/shared/models/key-value.model';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -21,6 +20,7 @@ export class RecipeEditComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private recipeService: RecipeService
   ) { }
 
@@ -29,50 +29,64 @@ export class RecipeEditComponent implements OnInit {
       .subscribe((params: Params) => {
         this.recipeId = +params.get('recipeId');
         this.isEditMode = !!params.get('recipeId');
-        this.recipeForm = this.initForm();
-
-        if (this.isEditMode) {
-          this.setValueForm(this.recipeForm, this.recipeId);
-        }
+        this.recipeForm = this.initForm(this.isEditMode, this.recipeId);
       });
   }
 
   onSubmit(): void {
-    
+    const recipe = this.recipeForm.value;
+    this.isEditMode
+      ? this.recipeService.updateRecipe(this.recipeId, recipe)
+      : this.recipeService.addRecipe(recipe);
+
+      this.navigateBack();
+  }
+
+  onCancel(): void {
+    this.navigateBack();
   }
 
   onAddIngredient(): void {
-    (this.recipeForm.get('ingredients') as FormArray).push(new FormGroup({
-      name: new FormControl(null, Validators.required),
-      amount: new FormControl(null, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
-    }));
+    (this.recipeForm.get('ingredients') as FormArray).push(this.createNameAmountFormGroup());
   }
 
-  private initForm(): FormGroup {
+  onDeleteIngredient(index: number): void {
+    (this.recipeForm.get('ingredients') as FormArray).removeAt(index);
+  }
+
+  private initForm(isEditMode: boolean, recipeId: number): FormGroup {
+    let recipe = new Recipe();
+    let ingredientsFormArray = new FormArray([]);
+
+    if (isEditMode) {
+      recipe = this.recipeService.getRecipe(recipeId);
+      ingredientsFormArray = this.initIngredientForm(recipe);
+    }
+
     return new FormGroup({
-      name: new FormControl(null, Validators.required),
-      imagePath: new FormControl(null, Validators.required),
-      description: new FormControl(null, Validators.required),
-      ingredients: new FormArray([])
-    })
+      name: new FormControl(recipe.name, Validators.required),
+      imagePath: new FormControl(recipe.imagePath, Validators.required),
+      description: new FormControl(recipe.description, Validators.required),
+      ingredients: ingredientsFormArray
+    });
   }
 
-  private setValueForm(form: FormGroup, recipeId: number): void {
-    const recipe = this.recipeService.getRecipe(recipeId);
-
+  private initIngredientForm(recipe: Recipe,): FormArray {
     const ingredientFromGroups = recipe.ingredients
-      .map(ingredient => new FormGroup({
-        name: new FormControl(ingredient.name, Validators.required),
-        amount: new FormControl(ingredient.amount, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
-      }));
+      .map(ingredient => this.createNameAmountFormGroup(ingredient.name, ingredient.amount));
 
-    form.controls['ingredients'] = new FormArray([...ingredientFromGroups]);
+    return new FormArray([...ingredientFromGroups]);
+  }
 
-    form.patchValue({
-      name: recipe.name,
-      imagePath: recipe.imagePath,
-      description: recipe.description
-    });
+  private navigateBack(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  private createNameAmountFormGroup(name?: string, amount?: number): FormGroup {
+    return new FormGroup({
+      name: new FormControl(name, Validators.required),
+      amount: new FormControl(amount, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
+    })
   }
 
   // private createFormGroup(formControlValues: KeyValue<string,any>[]): FormGroup {
