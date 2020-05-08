@@ -62,6 +62,11 @@ export class RecipeService {
         this.emitChanges();
     }
 
+    setRecipes(recipes: Recipe[]): void {
+        this.recipes = recipes;
+        this.emitChanges();
+    }
+
     private emitChanges(): void {
         this.recipeChanged.next([... this.recipes]);
     }
