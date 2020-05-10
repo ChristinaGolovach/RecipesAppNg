@@ -3,32 +3,37 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Recipe } from '../models/recipe.model';
 import { RecipeService } from '../recipe.service';
+import { DestroyableComponent } from 'src/app/shared/classes/destroyable-component';
+import { takeUntil, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-list',
   templateUrl: './recipe-list.component.html',
   styleUrls: ['./recipe-list.component.css']
 })
-export class RecipeListComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
+export class RecipeListComponent extends DestroyableComponent implements OnInit {
   recipes: Recipe[] = []
 
   constructor(
     private recipeService: RecipeService,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {
+      super();
+   }
 
   ngOnInit() {
-    this.recipes = this.recipeService.getRecipes();
-    this.subscription = this.recipeService.recipeChanged$
-      .subscribe(recipes => this.recipes = recipes);
-  }
+    this.recipeService.getRecipes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(recipes => 
+        this.recipes = recipes
+      );
 
-  ngOnDestroy() {
-    if (this.subscription){
-      this.subscription.unsubscribe();
-    }
+    this.recipeService.recipesChanged$
+      .pipe(switchMap(() => this.recipeService.getRecipes()),
+            takeUntil(this.destroy$))
+      .subscribe(recipes => 
+        this.recipes = recipes);
   }
 
   onSelectRecipeItem(id: number): void {
