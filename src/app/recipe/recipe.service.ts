@@ -25,15 +25,15 @@ export class RecipeService {
         return this.dataStorageService.getRecipes()
             .pipe(
                 map(recipes =>
-                this.recipes = recipes.map(recipe => 
-                    { return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []}}),
+                    this.recipes = recipes.map(recipe => this.mapRecipeIngredients(recipe))
             ));
     }
 
     getRecipe(id: number ): Observable<Recipe> {
         return this.dataStorageService.getRecipe(id)
-            .pipe(map(recipe =>
-                { return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []}}));
+            .pipe(
+                map(recipe => this.mapRecipeIngredients(recipe)
+            ));
     }
 
     addRecipe(recipe: Recipe): Observable<Recipe[]> {
@@ -58,5 +58,9 @@ export class RecipeService {
 
     private emitChanges(): void {
         this.recipesChanged.next()
+    }
+
+    private mapRecipeIngredients(recipe: Recipe): Recipe {
+        return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : [] };
     }
 }
