@@ -5,6 +5,7 @@ import { Observable, throwError, Subject, BehaviorSubject } from 'rxjs';
 import { AuthResponseData } from './models/auth-response-data.model';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './models/user.model';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +25,8 @@ export class AuthService {
     }
 
     constructor(
-        private httpClient: HttpClient
+        private httpClient: HttpClient,
+        private router: Router
     ) {}
 
     signup(email: string, password: string): Observable<AuthResponseData> {
@@ -37,6 +39,11 @@ export class AuthService {
         this.setCredentialsData(email, password);
 
         return this.postData(this.logInUrl);
+    }
+
+    logout(): void {
+        this.user.next(null);
+        this.router.navigate(['/auth']);
     }
 
     private postData(url: string): Observable<AuthResponseData> {

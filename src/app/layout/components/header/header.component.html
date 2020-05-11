@@ -10,7 +10,7 @@
                 <li routerLinkActive="active"><a routerLink="/shopping-list">Shopping List</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li *ngIf="isAuthenticated" style="cursor: pointer;">
+                <li *ngIf="isAuthenticated" style="cursor: pointer;" (click)="onLogout()">
                     <a>Logout</a>
                 </li>
                 <li appDirective class="dropdown" *ngIf="isAuthenticated">

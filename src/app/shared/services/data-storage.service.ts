@@ -18,15 +18,8 @@ export class DataStorageService {
     ) { }
 
     getRecipes(): Observable<Recipe[]> {
-        return this.authService.user$.pipe(
-            take(1),
-            exhaustMap(user => {
-                return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`, { params: new HttpParams().set('auth', user.token) });
-            }),
-            catchError(this.handleError));
-
-        // return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`)
-        //     .pipe(catchError(this.handleError));
+        return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`)
+            .pipe(catchError(this.handleError));
     }
 
     getRecipe(index: number): Observable<Recipe> {

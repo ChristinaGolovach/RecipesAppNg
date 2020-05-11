@@ -30,6 +30,10 @@ export class HeaderComponent extends DestroyableComponent implements OnInit {
       });
   }
 
+  onLogout(): void {
+    this.authService.logout();
+  }
+
   onSaveData(): void {
     this.dataStorageService.storeRecipes([]);
   }
