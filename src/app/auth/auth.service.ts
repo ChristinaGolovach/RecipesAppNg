@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthCredentials } from './models/auth-credentials.model';
-import { Observable, throwError, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { AuthResponseData } from './models/auth-response-data.model';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './models/user.model';
@@ -11,10 +11,12 @@ import { Router } from '@angular/router';
     providedIn: 'root'
 })
 export class AuthService {
-    private apiKey = 'AIzaSyBbjco0sAg0z0fcadTxp1hvyVXaMKa5gxY';
-    private signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`;
-    private logInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`;
+    private readonly apiKey = 'AIzaSyBbjco0sAg0z0fcadTxp1hvyVXaMKa5gxY';
+    private readonly signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`;
+    private readonly logInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`;
+    private readonly userDataStorageKey = 'userData';
     private user = new BehaviorSubject<User>(null);
+    private tokenExpirationTimer: any = null;
 
     user$ = this.user.asObservable();
 
@@ -41,9 +43,38 @@ export class AuthService {
         return this.postData(this.logInUrl);
     }
 
+    autoLogin(): void {
+        const user = JSON.parse(localStorage.getItem(this.userDataStorageKey));
+
+        if (!user) {
+            return;
+        }
+        
+        const tokenExpirationDate = new Date(user.tokenExpirationDate);
+        const loadedUser = new User(user.email, user.id, user.tokenValue, tokenExpirationDate);
+
+        if (loadedUser.token) {
+            this.user.next(loadedUser);
+            this.autoLogout(tokenExpirationDate.getTime() - new Date().getTime());
+        }
+    }
+
     logout(): void {
         this.user.next(null);
+        localStorage.removeItem(this.userDataStorageKey);
+
+        if (this.tokenExpirationTimer) {
+            clearTimeout(this.tokenExpirationTimer);
+        }
+        this.tokenExpirationTimer = null;
+
         this.router.navigate(['/auth']);
+    }
+
+    private autoLogout(expirationDurationInMS: number) {
+        this.tokenExpirationTimer = setTimeout(() => {
+            this.logout();
+        }, expirationDurationInMS);
     }
 
     private postData(url: string): Observable<AuthResponseData> {
@@ -63,6 +94,8 @@ export class AuthService {
         const user = new User(response.email, response.localId, response.idToken, tokenExpirationDate)
 
         this.user.next(user);
+        localStorage.setItem(this.userDataStorageKey, JSON.stringify(user));
+        this.autoLogout(tokenExpirationInMsNumber);
     }
 
     private handleError(error: HttpErrorResponse): Observable<never> {
