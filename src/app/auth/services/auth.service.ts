@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { AuthCredentials } from './models/auth-credentials.model';
+import { AuthCredentials } from '../models/auth-credentials.model';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { AuthResponseData } from './models/auth-response-data.model';
+import { AuthResponseData } from '../models/auth-response-data.model';
 import { catchError, tap } from 'rxjs/operators';
-import { User } from './models/user.model';
+import { User } from '../models/user.model';
 import { Router } from '@angular/router';
 
 @Injectable({

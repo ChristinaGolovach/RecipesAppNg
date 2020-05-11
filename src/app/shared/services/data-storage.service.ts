@@ -5,7 +5,7 @@ import { catchError, take, exhaustMap } from 'rxjs/operators';
 import { Recipe } from 'src/app/recipe/models/recipe.model';
 import { environment } from 'src/environments/environment';
 import { Observable, throwError } from 'rxjs';
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Injectable({
     providedIn: 'root'

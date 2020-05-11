@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataStorageService } from 'src/app/shared/services/data-storage.service';
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
 import { DestroyableComponent } from 'src/app/shared/classes/destroyable-component';
 import { takeUntil } from 'rxjs/operators';
 import { User } from 'src/app/auth/models/user.model';
