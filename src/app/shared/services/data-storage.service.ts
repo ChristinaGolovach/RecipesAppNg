@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { catchError, take, exhaustMap } from 'rxjs/operators';
 
 import { Recipe } from 'src/app/recipe/models/recipe.model';
 import { environment } from 'src/environments/environment';
 import { Observable, throwError } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,12 +13,20 @@ import { Observable, throwError } from 'rxjs';
 export class DataStorageService {
     private apiUrl: string = environment.apiUrl;
     constructor(
-        private httpClient: HttpClient
+        private httpClient: HttpClient,
+        private authService: AuthService
     ) { }
 
     getRecipes(): Observable<Recipe[]> {
-        return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`)
-            .pipe(catchError(this.handleError));
+        return this.authService.user$.pipe(
+            take(1),
+            exhaustMap(user => {
+                return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`, { params: new HttpParams().set('auth', user.token) });
+            }),
+            catchError(this.handleError));
+
+        // return this.httpClient.get<Recipe[]>(`${this.apiUrl}recipes.json`)
+        //     .pipe(catchError(this.handleError));
     }
 
     getRecipe(index: number): Observable<Recipe> {
