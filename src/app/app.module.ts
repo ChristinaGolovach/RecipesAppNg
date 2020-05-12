@@ -18,6 +18,7 @@ import { RecipeEditComponent } from './recipe/recipe-edit/recipe-edit.component'
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AuthInterceptor } from './auth/services/auth-interceptor.service';
+import { SearchPipe } from './shared/pipes/search.pipe';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { AuthInterceptor } from './auth/services/auth-interceptor.service';
     RecipeEditComponent,
     AuthComponent,
     LoadingSpinnerComponent,
+    SearchPipe,
   ],
   imports: [
     BrowserModule,

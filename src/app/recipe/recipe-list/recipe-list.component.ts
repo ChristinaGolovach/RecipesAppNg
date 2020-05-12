@@ -13,6 +13,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 })
 export class RecipeListComponent extends DestroyableComponent implements OnInit {
   recipes: Recipe[] = []
+  searchValue: string = '';
 
   constructor(
     private recipeService: RecipeService,
@@ -42,5 +43,9 @@ export class RecipeListComponent extends DestroyableComponent implements OnInit 
 
   onNewRecipe(): void {
     this.router.navigate(['new'], { relativeTo: this.route });
+  }
+
+  onClearSearch(): void {
+    this.searchValue = '';
   }
 }
