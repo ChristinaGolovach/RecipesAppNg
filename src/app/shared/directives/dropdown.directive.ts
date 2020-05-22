@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Renderer2, HostListener, OnInit } from '@angular/core';
 
 @Directive({
-    selector: '[appDirective]'
+    selector: '[appToggleDropdown]'
 })
 export class DropdownDirective {
     private readonly className: string = 'open';
@@ -12,8 +12,8 @@ export class DropdownDirective {
         this.isOpened 
             ? this.renderer.removeClass(element, this.className) 
             : this.renderer.addClass(element, this.className);
-        
-        this.isOpened = !this.isOpened;        
+
+        this.isOpened = !this.isOpened;
     }
 
     constructor(

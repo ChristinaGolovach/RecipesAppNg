@@ -1,13 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router'
 
-import { ShoppingListComponent } from './procurement/shopping-list/shopping-list.component';
-import { AuthComponent } from './auth/auth.component';
-
 const routes: Routes = [
-    { path: 'recipes', loadChildren: () => import('./recipe/recipe.module').then(m => m.RecipeModule) },
-    { path: 'shopping-list', component: ShoppingListComponent },
-    { path: 'auth', component: AuthComponent },
+    { path: 'shopping-list', loadChildren: () => import('./procurement/shopping.module').then(m => m.ShoppingModule) },
+    { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
     { path: '', pathMatch: 'full', redirectTo: '/recipes'}
 ]
 
