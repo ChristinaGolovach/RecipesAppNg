@@ -47,6 +47,11 @@ export class DataStorageService {
         .pipe(catchError(this.handleError));
     }
 
+    searchRecipes(recipeName: string) {
+        return this.httpClient.get<any>(`${this.apiUrl}recipes.json?orderBy="name"&equalTo="${recipeName}"&`)
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(error: HttpErrorResponse): Observable<never> {
         if (error.error instanceof ErrorEvent) {
             console.log(`An error occurred:`, error.error.message);
@@ -56,3 +61,8 @@ export class DataStorageService {
         return throwError(error);
     }
 }
+
+    // for search
+    // https://firebase.google.com/docs/database/security/indexing-data
+    // https://firebase.google.com/docs/database/rest/retrieve-data#section-rest-filtering
+    // https://firebase.google.com/docs/reference/rest/database#section-query-parameters

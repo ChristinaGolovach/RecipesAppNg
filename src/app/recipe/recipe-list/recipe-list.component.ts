@@ -24,11 +24,7 @@ export class RecipeListComponent extends DestroyableComponent implements OnInit 
    }
 
   ngOnInit() {
-    this.recipeService.getRecipes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(recipes => 
-        this.recipes = recipes
-      );
+    this.getRecipes();
 
     this.recipeService.recipesChanged$
       .pipe(switchMap(() => this.recipeService.getRecipes()),
@@ -47,5 +43,22 @@ export class RecipeListComponent extends DestroyableComponent implements OnInit 
 
   onClearSearch(): void {
     this.searchValue = '';
+    this.getRecipes();
+  }
+
+  onSearch(): void {
+    this.recipeService.searchRecipes(this.searchValue)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(recipes =>
+        this.recipes = recipes
+        );
+  }
+
+  private getRecipes(): void {
+    this.recipeService.getRecipes()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(recipes => 
+      this.recipes = recipes
+    );
   }
 }

@@ -52,6 +52,16 @@ export class RecipeService {
             .pipe(tap(() => this.emitChanges()));
     }
 
+    searchRecipes(recipeName: string): Observable<any> {
+        return this.dataStorageService.searchRecipes(recipeName)
+            .pipe(
+                map(recipes =>
+                    this.recipes = Object.values(recipes)
+                                         .map((recipe: Recipe) => this.mapRecipeIngredients(recipe))
+                    )
+            );
+    }
+
     addIngredientsToShoppingList(...ingredients: Ingredient[]): void {
         this.shoppingListService.addIngredients(...ingredients);
     }
