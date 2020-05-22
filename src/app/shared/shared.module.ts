@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { SearchPipe } from './pipes/search.pipe';
+import { CropPipe } from './pipes/crop.pipe';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownDirective } from './directives/dropdown.directive';
@@ -12,7 +12,7 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
         ReactiveFormsModule,
     ],
     declarations: [
-        SearchPipe,
+        CropPipe,
         DropdownDirective,
         LoadingSpinnerComponent
     ],
@@ -20,7 +20,7 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        SearchPipe,
+        CropPipe,
         DropdownDirective,
         LoadingSpinnerComponent
     ]

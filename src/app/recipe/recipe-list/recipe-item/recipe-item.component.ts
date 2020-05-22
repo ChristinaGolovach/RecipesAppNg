@@ -7,6 +7,8 @@ import { Recipe } from '../../models/recipe.model';
   styleUrls: ['./recipe-item.component.css']
 })
 export class RecipeItemComponent implements OnInit {
+  readonly maxDescriptionLength = 20;
+
   @Input() recipe: Recipe;
 
   constructor() { }
