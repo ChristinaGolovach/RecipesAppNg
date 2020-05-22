@@ -14,7 +14,6 @@ export class DataStorageService {
     private apiUrl: string = environment.apiUrl;
     constructor(
         private httpClient: HttpClient,
-        private authService: AuthService
     ) { }
 
     getRecipes(): Observable<Recipe[]> {
@@ -25,11 +24,6 @@ export class DataStorageService {
     getRecipe(index: number): Observable<Recipe> {
         return this.httpClient.get<Recipe>(`${this.apiUrl}recipes/${index}.json`)
             .pipe(catchError(this.handleError));
-    }
-
-    //TODO delete
-    storeRecipes(recipes: Recipe[]): void {
-        this.httpClient.put(`${this.apiUrl}recipes.json`, recipes).subscribe();
     }
 
     addRecipe(recipe: Recipe[]): Observable<Recipe[]> {

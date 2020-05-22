@@ -4,7 +4,8 @@ import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { Recipe } from '../models/recipe.model';
 import { RecipeService } from '../recipe.service';
 import { DestroyableComponent } from 'src/app/shared/classes/destroyable-component';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, startWith } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -14,6 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 export class RecipeEditComponent extends DestroyableComponent implements OnInit {
   private recipeId: number;
   private isEditMode: boolean = false;
+  private editedRecipeInitialValue: Recipe;
   recipeForm: FormGroup;
 
   get ingredientControls() {
@@ -45,9 +47,6 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
 
   onSubmit(): void {
     const recipe = this.recipeForm.value;
-    // this.isEditMode
-    //   ? this.recipeService.updateRecipe(this.recipeId, recipe) //when debug all is ok, else - not update
-    //   : this.recipeService.addRecipe(recipe);
 
     if (this.isEditMode) {
       this.recipeService.updateRecipe(this.recipeId, recipe)
@@ -59,6 +58,7 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
   }
 
   onCancel(): void {
+    this.recipeService.emitEditingValue(this.recipeId, this.editedRecipeInitialValue);
     this.navigateBack();
   }
 
@@ -68,6 +68,19 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
 
   onDeleteIngredient(index: number): void {
     (this.recipeForm.get('ingredients') as FormArray).removeAt(index);
+  }
+
+  private watchFormChanges() {
+    const descriptionChanges = this.recipeForm.controls.description.valueChanges;
+    const nameChanges = this.recipeForm.controls.name.valueChanges;
+  
+    combineLatest(nameChanges.pipe(startWith(this.recipeForm.controls.name.value)),
+                  descriptionChanges.pipe(startWith(this.recipeForm.controls.description.value)))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([name, description]) => {
+        const editedRecipe = new Recipe({name: name, description: description})
+        this.recipeService.emitEditingValue(this.recipeId, editedRecipe);
+      });
   }
 
   private navigateBack(): void {
@@ -85,6 +98,8 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
           recipe = currentRecipe; 
           ingredientsFormArray = this.initIngredientForm(recipe);
           this.recipeForm = this.createRecipeForm(recipe, ingredientsFormArray);
+          this.editedRecipeInitialValue = recipe;
+          this.watchFormChanges();
         });
     } else {
       this.recipeForm = this.createRecipeForm(recipe, ingredientsFormArray)

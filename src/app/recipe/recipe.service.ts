@@ -16,6 +16,9 @@ export class RecipeService {
     private recipesChanged: Subject<void> = new Subject<void>();
     recipesChanged$: Observable<void> = this.recipesChanged.asObservable();
 
+    private recipeChanged: Subject<{id: number, recipe: Recipe}> = new Subject<{id: number, recipe: Recipe}>();
+    recipeChanged$: Observable<{id: number, recipe: Recipe}> = this.recipeChanged.asObservable();
+
     constructor(
         private shoppingListService: ShoppingListService,
         private dataStorageService: DataStorageService
@@ -45,6 +48,7 @@ export class RecipeService {
 
     updateRecipe(index: number, recipe: Recipe): Observable<Recipe> {
         return this.dataStorageService.updateRecipe(index, recipe);
+            // .pipe(tap(() => this.emitChanges()));
     }
 
     deleteRecipe(index: number): Observable<any> {
@@ -64,6 +68,10 @@ export class RecipeService {
 
     addIngredientsToShoppingList(...ingredients: Ingredient[]): void {
         this.shoppingListService.addIngredients(...ingredients);
+    }
+
+    emitEditingValue(recipeId: number, recipe: Recipe): void {
+        this.recipeChanged.next({id: recipeId, recipe: recipe});
     }
 
     private emitChanges(): void {

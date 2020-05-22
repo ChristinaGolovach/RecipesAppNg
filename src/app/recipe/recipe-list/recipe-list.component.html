@@ -14,6 +14,7 @@
         <app-recipe-item
             *ngFor="let recipeItem of recipes; let id = index"
             [recipe]=recipeItem
+            [index]=id
             (click)="onSelectRecipeItem(id)">
         </app-recipe-item>
     </div>

@@ -15,7 +15,6 @@ export class HeaderComponent extends DestroyableComponent implements OnInit {
   user: User;
 
   constructor(
-    private dataStorageService: DataStorageService,
     private authService: AuthService
   ) {
       super();
@@ -32,13 +31,5 @@ export class HeaderComponent extends DestroyableComponent implements OnInit {
 
   onLogout(): void {
     this.authService.logout();
-  }
-
-  onSaveData(): void {
-    this.dataStorageService.storeRecipes([]);
-  }
-
-  onFetchData() {
-    this.dataStorageService.getRecipes();
   }
 }
