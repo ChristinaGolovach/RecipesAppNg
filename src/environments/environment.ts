@@ -4,7 +4,15 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://recipes-app-ng.firebaseio.com/'
+  firebase: {
+    apiKey: "AIzaSyBbjco0sAg0z0fcadTxp1hvyVXaMKa5gxY",
+    authDomain: "recipes-app-ng.firebaseapp.com",
+    databaseURL: "https://recipes-app-ng.firebaseio.com",
+    projectId: "recipes-app-ng",
+    storageBucket: "recipes-app-ng.appspot.com",
+    messagingSenderId: "579981508126",
+    appId: "1:579981508126:web:ece44fb33e59c0172b380f"
+  }
 };
 
 /*

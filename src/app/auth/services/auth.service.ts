@@ -6,12 +6,13 @@ import { AuthResponseData } from '../models/auth-response-data.model';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private readonly apiKey = 'AIzaSyBbjco0sAg0z0fcadTxp1hvyVXaMKa5gxY';
+    private readonly apiKey = environment.firebase.apiKey;
     private readonly signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`;
     private readonly logInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`;
     private readonly userDataStorageKey = 'userData';

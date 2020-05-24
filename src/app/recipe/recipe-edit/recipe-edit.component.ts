@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { FormGroup, FormControl, FormArray, Validators, FormsModule } from '@angular/forms';
 import { Recipe } from '../models/recipe.model';
 import { RecipeService } from '../recipe.service';
 import { DestroyableComponent } from 'src/app/shared/classes/destroyable-component';
 import { takeUntil, startWith } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
+import { FileUpload } from 'src/app/shared/models/file-upload.model';
+import { UploadFileService } from 'src/app/shared/services/upload-file.service';
+import { ImageSourceType } from 'src/app/shared/enums/image-source-type.enum';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -17,6 +20,8 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
   private isEditMode: boolean = false;
   private editedRecipeInitialValue: Recipe;
   recipeForm: FormGroup;
+  currentImageUpload: FileUpload = null;
+  imageSourceTypes = ImageSourceType;
 
   get ingredientControls() {
     return (this.recipeForm.get('ingredients') as FormArray).controls;
@@ -25,7 +30,8 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private recipeService: RecipeService
+    private recipeService: RecipeService,
+    private uploadService: UploadFileService
   ) { 
     super();
   }
@@ -48,13 +54,11 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
   onSubmit(): void {
     const recipe = this.recipeForm.value;
 
-    if (this.isEditMode) {
-      this.recipeService.updateRecipe(this.recipeId, recipe)
-        .subscribe(() => this.navigateBack());
-    } else {
-      this.recipeService.addRecipe(recipe)
-        .subscribe(() => this.navigateBack());
+    if (this.recipeForm.controls.imageSource.value === ImageSourceType.Url) {
+      this.currentImageUpload = null;
     }
+
+    this.processSubmitForm(recipe);
   }
 
   onCancel(): void {
@@ -68,6 +72,28 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
 
   onDeleteIngredient(index: number): void {
     (this.recipeForm.get('ingredients') as FormArray).removeAt(index);
+  }
+
+  onFileSelected(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const files = target.files || [];
+    if (files[0]) {
+      const reader = new FileReader();
+      const file = files[0];
+      reader.readAsDataURL(files[0]);
+      reader.onloadend = () => { this.recipeForm.controls.imagePath.setValue(reader.result); };
+      this.currentImageUpload = new FileUpload(file);
+    }
+  }
+
+  private processSubmitForm(recipe: Recipe) {
+    if (this.isEditMode) {
+      this.recipeService.updateRecipe(this.recipeId, recipe, this.currentImageUpload)
+        .subscribe(() => this.navigateBack());
+    } else {
+      this.recipeService.addRecipe(recipe, this.currentImageUpload)
+        .subscribe(() => this.navigateBack());
+    }
   }
 
   private watchFormChanges() {
@@ -116,6 +142,7 @@ export class RecipeEditComponent extends DestroyableComponent implements OnInit 
   private createRecipeForm(recipe: Recipe, ingredients: FormArray): FormGroup {
     return new FormGroup({
       name: new FormControl(recipe.name, Validators.required),
+      imageSource: new FormControl(ImageSourceType.Url, Validators.required),
       imagePath: new FormControl(recipe.imagePath, Validators.required),
       description: new FormControl(recipe.description, Validators.required),
       ingredients: ingredients

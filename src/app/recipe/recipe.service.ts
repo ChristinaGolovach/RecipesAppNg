@@ -5,7 +5,9 @@ import { Ingredient } from '../shared/models/ingredient.model';
 import { ShoppingListService } from '../procurement/shopping-list/shopping-list.service';
 import { Subject, Observable } from 'rxjs';
 import { DataStorageService } from '../shared/services/data-storage.service';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, concatMap } from 'rxjs/operators';
+import { FileUpload } from '../shared/models/file-upload.model';
+import { UploadFileService } from '../shared/services/upload-file.service';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +23,8 @@ export class RecipeService {
 
     constructor(
         private shoppingListService: ShoppingListService,
-        private dataStorageService: DataStorageService
+        private dataStorageService: DataStorageService,
+        private uploadService: UploadFileService
     ) { }
 
     getRecipes(): Observable<Recipe[]> {
@@ -39,16 +42,39 @@ export class RecipeService {
             ));
     }
 
-    addRecipe(recipe: Recipe): Observable<Recipe[]> {
-        this.recipes = [...this.recipes, recipe]
+    addRecipe(recipe: Recipe, imageUpload: FileUpload): Observable<Recipe[]> {
+        if (imageUpload) {
+            return this.uploadService.pushFileToStorage(imageUpload)
+                .pipe(
+                    concatMap(imageDownloadUrl => {
+                        recipe.imagePath = imageDownloadUrl;
+                        this.recipes = [...this.recipes, recipe]
+                        return this.dataStorageService.addRecipe(this.recipes)
+                    }),
+                    tap(() => this.emitChanges())
+                );
+        } else {
+            this.recipes = [...this.recipes, recipe];
 
-        return this.dataStorageService.addRecipe(this.recipes)
-            .pipe(tap(() => this.emitChanges()));
+            return this.dataStorageService.addRecipe(this.recipes)
+                .pipe(tap(() => this.emitChanges()));
+        }
     }
 
-    updateRecipe(index: number, recipe: Recipe): Observable<Recipe> {
-        return this.dataStorageService.updateRecipe(index, recipe);
-            // .pipe(tap(() => this.emitChanges()));
+    updateRecipe(index: number, recipe: Recipe, imageUpload: FileUpload): Observable<Recipe> {
+        if (imageUpload) {
+            return this.uploadService.pushFileToStorage(imageUpload)
+                .pipe(
+                    concatMap(imageDownloadUrl => {
+                        recipe.imagePath = imageDownloadUrl;
+                        return this.dataStorageService.updateRecipe(index, recipe)
+                    }),
+                    tap(() => this.emitChanges())
+                );
+        } else {
+            return this.dataStorageService.updateRecipe(index, recipe)
+                .pipe(tap(() => this.emitChanges()));
+        }
     }
 
     deleteRecipe(index: number): Observable<any> {

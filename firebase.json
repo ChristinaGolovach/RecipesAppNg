@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "RecipesAppNg",
+      "public": "dist/RecipesAppNg",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

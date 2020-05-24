@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "recipes-app-ng": {
+      "hosting": {
+        "RecipesAppNg": [
+          "recipes-app-ng"
+        ]
+      }
+    }
+  }
+}

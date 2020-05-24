@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem } from './shared/enums/menuItems.enum';
 import { AuthService } from './auth/services/auth.service';
 
 @Component({

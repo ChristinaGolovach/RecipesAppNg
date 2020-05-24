@@ -17,15 +17,32 @@
             </div>
             <div class="row">
                 <div class="col-xs-12">
+                    <input #imageUrl id="imageUrl" type="radio" [value]="imageSourceTypes.Url" name="imageSource" formControlName="imageSource">
+                    <label for="imageUrl">Direct Url</label>
+                    |
+                    <input #imageSource id="Upload" type="radio" [value]="imageSourceTypes.Upload" name="imageSource" formControlName="imageSource">
+                    <label for="imageUpload">Image Upload</label>
+                </div>
+            </div>
+            <div *ngIf="imageUrl.checked" class="row">
+                <div class="col-xs-12">
                     <div class="form-group">
                         <label for="imagePath">Image URL</label>
-                        <input type="text" id="imagePath" class="form-control" formControlName="imagePath" #imagePath>
+                        <input #imagePath type="text" id="imagePath" class="form-control" formControlName="imagePath">
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="imageSource.checked" class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <input #fileInput style="display:none" type="file" accept="image/*" (change)="onFileSelected($event)">
+                        <button type="button" (click)="fileInput.click()">Pick File</button>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <img [src]="imagePath.value" class="img-responsive">
+                    <img [src]="recipeForm.controls.imagePath.value" class="img-responsive">
                 </div>
             </div>
             <div class="row">
